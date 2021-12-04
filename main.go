@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"go-ws-kit/localpool"
 	"log"
 	"net/http"
 )
@@ -26,8 +27,8 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	flag.Parse()
-	hub := newHub()
-	go hub.run()
+	hub := localpool.NewHub()
+	go hub.Run()
 
 	http.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "pong")
@@ -35,7 +36,7 @@ func main() {
 
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
-		serveWs(hub, w, r)
+		localpool.ServeWs(hub, w, r)
 	})
 
 	log.Println("Server started at", *addr)
